@@ -1,7 +1,7 @@
 package com.jmoraes.componentizationsample.player.components
 
-import android.arch.lifecycle.LifecycleOwner
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import com.netflix.componentizationV1.EventBusFactory
 import com.netflix.elfo.components.PrimaryControlsUIView
 import com.nhaarman.mockitokotlin2.doReturn
@@ -11,7 +11,7 @@ import org.junit.Test
 import org.mockito.Mockito
 
 class PrimaryControlsComponentTest {
-    private lateinit var component : TestPrimaryControlsComponent
+    private lateinit var component: TestPrimaryControlsComponent
     private val owner = mock<LifecycleOwner> {
         on { lifecycle } doReturn mock()
     }
