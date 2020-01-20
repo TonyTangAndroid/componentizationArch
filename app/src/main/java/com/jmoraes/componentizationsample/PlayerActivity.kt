@@ -36,14 +36,9 @@ class PlayerActivity : AppCompatActivity(), LifecycleOwner {
     private var player: SimpleExoPlayer? = null
     private val playerView: PlayerView by lazy { findViewById<PlayerView>(R.id.player_view) }
     private lateinit var primaryControlsComponent: PrimaryControlsComponent
-    private lateinit var lifecycleRegistry: LifecycleRegistry
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.markState(Lifecycle.State.CREATED)
-
         setContentView(R.layout.activity_player)
         val container = findViewById<ConstraintLayout>(R.id.player_root)
 
@@ -58,19 +53,19 @@ class PlayerActivity : AppCompatActivity(), LifecycleOwner {
 
         primaryControlsComponent = PrimaryControlsComponent(container, EventBusFactory.get(this))
         primaryControlsComponent.getUserInteractionEvents()
-            .subscribe {
-                when (it) {
-                    PlayerUserInteractionEvents.IntentPlayPauseClicked -> {
-                        player?.playWhenReady = !player?.playWhenReady!!
-                    }
-                    PlayerUserInteractionEvents.IntentRwClicked -> {
-                        player?.seekTo(player?.currentPosition!! / 2)
-                    }
-                    PlayerUserInteractionEvents.IntentFwClicked -> {
-                        player?.seekTo(player?.currentPosition!! * 2)
+                .subscribe {
+                    when (it) {
+                        PlayerUserInteractionEvents.IntentPlayPauseClicked -> {
+                            player?.playWhenReady = !player?.playWhenReady!!
+                        }
+                        PlayerUserInteractionEvents.IntentRwClicked -> {
+                            player?.seekTo(player?.currentPosition!! / 2)
+                        }
+                        PlayerUserInteractionEvents.IntentFwClicked -> {
+                            player?.seekTo(player?.currentPosition!! * 2)
+                        }
                     }
                 }
-            }
     }
 
     private fun layoutUIComponents(rootViewContainer: ConstraintLayout) {
@@ -79,16 +74,16 @@ class PlayerActivity : AppCompatActivity(), LifecycleOwner {
         mainContainerConstraintSet.clone(rootViewContainer)
 
         mainContainerConstraintSet.connect(
-            primaryControlsComponent.getContainerId(),
-            ConstraintSet.TOP,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.TOP
+                primaryControlsComponent.getContainerId(),
+                ConstraintSet.TOP,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.TOP
         )
         mainContainerConstraintSet.connect(
-            primaryControlsComponent.getContainerId(),
-            ConstraintSet.BOTTOM,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.BOTTOM
+                primaryControlsComponent.getContainerId(),
+                ConstraintSet.BOTTOM,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.BOTTOM
         )
 
         // Apply the constraints from all UI components to the parent
@@ -108,8 +103,8 @@ class PlayerActivity : AppCompatActivity(), LifecycleOwner {
     private fun initializePlayer() {
         playerView.requestFocus()
         player = ExoPlayerFactory.newSimpleInstance(
-            this,
-            DefaultTrackSelector(AdaptiveTrackSelection.Factory(DefaultBandwidthMeter()))
+                this,
+                DefaultTrackSelector(AdaptiveTrackSelection.Factory(DefaultBandwidthMeter()))
         )
 
         player?.let {
@@ -119,19 +114,19 @@ class PlayerActivity : AppCompatActivity(), LifecycleOwner {
 
         // artificial delay to simulate a network request
         Observable.just(Any())
-            .delay(5, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext {
-                val mediaSource = ExtractorMediaSource.Factory(
-                    DefaultDataSourceFactory(
-                        this, Util.getUserAgent(this, "mediaPlayerSample"),
-                        DefaultBandwidthMeter() as TransferListener<in DataSource>
-                    )
-                ).createMediaSource(Uri.parse("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"))
+                .delay(5, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext {
+                    val mediaSource = ExtractorMediaSource.Factory(
+                            DefaultDataSourceFactory(
+                                    this, Util.getUserAgent(this, "mediaPlayerSample"),
+                                    DefaultBandwidthMeter() as TransferListener<in DataSource>
+                            )
+                    ).createMediaSource(Uri.parse("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"))
 
-                player?.prepare(mediaSource, false, false)
-            }
-            .subscribe()
+                    player?.prepare(mediaSource, false, false)
+                }
+                .subscribe()
 
         player?.playWhenReady = true
     }
@@ -172,7 +167,4 @@ class PlayerActivity : AppCompatActivity(), LifecycleOwner {
         }
     }
 
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
-    }
 }

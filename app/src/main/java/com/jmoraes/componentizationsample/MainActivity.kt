@@ -18,16 +18,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), LifecycleOwner {
-    private lateinit var lifecycleRegistry: LifecycleRegistry
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry.markState(Lifecycle.State.CREATED)
-
         setContentView(R.layout.activity_main)
-
         initComponents(findViewById(R.id.root))
 
         startSimulation()
@@ -75,9 +68,5 @@ class MainActivity : AppCompatActivity(), LifecycleOwner {
                 EventBusFactory.get(this).emit(ScreenStateEvent::class.java, ScreenStateEvent.Error)
             }
             .subscribe()
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
     }
 }
